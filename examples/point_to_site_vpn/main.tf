@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -21,7 +25,6 @@ provider "azurerm" {
   features {}
 }
 
-# Provide a random Azure region for the resource group.
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
   version = "~> 0.1"
@@ -32,7 +35,6 @@ resource "random_integer" "region_index" {
   min = 0
 }
 
-# Unique CAF compliant names for resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "~> 0.3"
@@ -47,11 +49,11 @@ resource "azurerm_virtual_network" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_network.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.20.0.0/16"]
 }
 
 resource "azurerm_subnet" "gateway" {
-  address_prefixes     = ["10.0.255.0/27"]
+  address_prefixes     = ["10.20.255.0/27"]
   name                 = "GatewaySubnet"
   resource_group_name  = azurerm_resource_group.this.name
   virtual_network_name = azurerm_virtual_network.this.name
@@ -66,13 +68,37 @@ resource "azurerm_public_ip" "this" {
   zones               = ["1", "2", "3"]
 }
 
-# Module call.
+# Self-signed root certificate used for P2S certificate authentication.
+resource "tls_private_key" "root" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "root" {
+  allowed_uses          = ["cert_signing", "crl_signing", "digital_signature"]
+  private_key_pem       = tls_private_key.root.private_key_pem
+  validity_period_hours = 8760
+  is_ca_certificate     = true
+
+  subject {
+    common_name = "P2SRootCA"
+  }
+}
+
+# Public cert data must be base64 of the DER bytes (no PEM headers).
+locals {
+  root_cert_data = replace(replace(replace(tls_self_signed_cert.root.cert_pem,
+    "-----BEGIN CERTIFICATE-----", ""),
+    "-----END CERTIFICATE-----", ""),
+  "\n", "")
+}
+
+# VPN gateway with Point-to-Site VPN client configuration applied directly via the root module.
 module "test" {
   source = "../../"
 
   ip_configurations = {
     primary = {
-      name                          = "default"
       subnet_resource_id            = azurerm_subnet.gateway.id
       public_ip_address_resource_id = azurerm_public_ip.this.id
     }
@@ -83,5 +109,16 @@ module "test" {
   sku                 = "VpnGw1AZ"
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
-  vpn_type            = "RouteBased"
+  vpn_client_configuration = {
+    address_space            = ["172.16.201.0/24"]
+    vpn_client_protocols     = ["OpenVPN"]
+    vpn_authentication_types = ["Certificate"]
+    root_certificates = {
+      P2SRootCA = {
+        public_cert_data = local.root_cert_data
+      }
+    }
+  }
+  vpn_gateway_generation = "Generation1"
+  vpn_type               = "RouteBased"
 }

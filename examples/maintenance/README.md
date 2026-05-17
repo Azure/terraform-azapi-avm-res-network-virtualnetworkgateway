@@ -86,6 +86,15 @@ resource "azurerm_public_ip" "this" {
 }
 
 # Module call.
+#
+# Customer-controlled maintenance windows are defined via the
+# `maintenance_configurations` input. Azure enforces a minimum window
+# duration of 300 minutes (5 hours) for the `NetworkGatewayMaintenance`
+# sub-scope, so the requested literal "Saturday 14:00 - 16:00" window is
+# widened to the closest compliant window starting at 14:00. The "Sunday
+# all day" window is expressed as a daily 5h recurrence starting at 00:00.
+# `start_date_time` only anchors the recurrence; the cadence is driven by
+# `recur_every`.
 module "test" {
   source = "../../"
 
@@ -102,7 +111,18 @@ module "test" {
   sku                 = "VpnGw1AZ"
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
-  vpn_type            = "RouteBased"
+  maintenance_configurations = {
+    saturday = {
+      name = "mc-${module.naming.virtual_network_gateway.name_unique}-sat"
+      maintenance_window = {
+        start_date_time = "2026-01-03 14:00"
+        duration        = "05:00"
+        time_zone       = "UTC"
+        recur_every     = "1Day"
+      }
+    }
+  }
+  vpn_type = "RouteBased"
 }
 ```
 
