@@ -39,7 +39,7 @@ provider "azurerm" {
 # Provide a random Azure region for the resource group.
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.12"
+  version = "0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -160,7 +160,7 @@ Version: 0.4.3
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.12
+Version: 0.12.0
 
 ### <a name="module_test"></a> [test](#module\_test)
 
