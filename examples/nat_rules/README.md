@@ -197,6 +197,7 @@ module "cloud" {
   name                = local.cloud_gateway_name
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw2AZ"
+  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   ipsec_site_to_site_connections = {
@@ -249,6 +250,7 @@ module "onprem" {
   name                = local.onprem_gateway_name
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw2AZ"
+  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   ipsec_site_to_site_connections = {

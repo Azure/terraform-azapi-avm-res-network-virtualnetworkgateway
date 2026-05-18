@@ -73,7 +73,7 @@ DESCRIPTION
 
 variable "active_active" {
   type        = bool
-  default     = false
+  default     = true
   description = "Whether to deploy the gateway in active-active mode. Requires at least 2 IP configurations."
   nullable    = false
 }

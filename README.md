@@ -157,7 +157,7 @@ Description: Whether to deploy the gateway in active-active mode. Requires at le
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_bgp_settings"></a> [bgp\_settings](#input\_bgp\_settings)
 

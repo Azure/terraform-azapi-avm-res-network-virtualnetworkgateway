@@ -205,6 +205,7 @@ module "cloud" {
   name                = "${module.naming.virtual_network_gateway.name_unique}-cloud"
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw1AZ"
+  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   ipsec_site_to_site_connections = {
@@ -252,6 +253,7 @@ module "onprem" {
   name                = "${module.naming.virtual_network_gateway.name_unique}-onprem"
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw1AZ"
+  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   ipsec_site_to_site_connections = {

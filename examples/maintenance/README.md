@@ -105,6 +105,7 @@ module "test" {
   name                = module.naming.virtual_network_gateway.name_unique
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw1AZ"
+  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   maintenance_configurations = {
