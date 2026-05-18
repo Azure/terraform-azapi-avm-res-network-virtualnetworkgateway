@@ -28,7 +28,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.12.0"
+  version = "0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -38,7 +38,7 @@ resource "random_integer" "region_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.4.3"
+  version = "0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -99,7 +99,7 @@ resource "azurerm_express_route_port" "this" {
 # using the AVM ExpressRoute circuit resource module.
 module "expressroute_circuit" {
   source  = "Azure/avm-res-network-expressroutecircuit/azurerm"
-  version = "~> 0.3.3"
+  version = "0.3.3"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.express_route_circuit.name_unique

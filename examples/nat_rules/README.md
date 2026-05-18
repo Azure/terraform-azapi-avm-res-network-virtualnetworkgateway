@@ -43,7 +43,7 @@ data "azurerm_client_config" "current" {}
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.12.0"
+  version = "0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -53,7 +53,7 @@ resource "random_integer" "region_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.4.3"
+  version = "0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -336,7 +336,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.4.3
+Version: 0.4.3
 
 ### <a name="module_onprem"></a> [onprem](#module\_onprem)
 
@@ -348,7 +348,7 @@ Version:
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: ~> 0.12.0
+Version: 0.12.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
