@@ -72,10 +72,20 @@ resource "azurerm_subnet" "gateway" {
   virtual_network_name = azurerm_virtual_network.this.name
 }
 
-resource "azurerm_public_ip" "this" {
+# Active-active gateways require two public IP addresses, one per IP configuration.
+resource "azurerm_public_ip" "primary" {
   allocation_method   = "Static"
   location            = azurerm_resource_group.this.location
-  name                = module.naming.public_ip.name_unique
+  name                = "${module.naming.public_ip.name_unique}-primary"
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = "Standard"
+  zones               = ["1", "2", "3"]
+}
+
+resource "azurerm_public_ip" "secondary" {
+  allocation_method   = "Static"
+  location            = azurerm_resource_group.this.location
+  name                = "${module.naming.public_ip.name_unique}-secondary"
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Standard"
   zones               = ["1", "2", "3"]
@@ -96,16 +106,20 @@ module "test" {
 
   ip_configurations = {
     primary = {
-      name                          = "default"
+      name                          = "primary"
       subnet_resource_id            = azurerm_subnet.gateway.id
-      public_ip_address_resource_id = azurerm_public_ip.this.id
+      public_ip_address_resource_id = azurerm_public_ip.primary.id
+    }
+    secondary = {
+      name                          = "secondary"
+      subnet_resource_id            = azurerm_subnet.gateway.id
+      public_ip_address_resource_id = azurerm_public_ip.secondary.id
     }
   }
   location            = azurerm_resource_group.this.location
   name                = module.naming.virtual_network_gateway.name_unique
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw1AZ"
-  active_active       = false
   enable_telemetry    = var.enable_telemetry
   gateway_type        = "Vpn"
   maintenance_configurations = {
@@ -138,7 +152,8 @@ The following requirements are needed by this module:
 
 The following resources are used by this module:
 
-- [azurerm_public_ip.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
+- [azurerm_public_ip.primary](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
+- [azurerm_public_ip.secondary](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.gateway](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)

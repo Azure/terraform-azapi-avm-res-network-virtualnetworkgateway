@@ -99,6 +99,20 @@ resource "azurerm_public_ip" "cloud_pip" {
   }
 }
 
+# Secondary public IP for the cloud-side active-active gateway instance.
+resource "azurerm_public_ip" "cloud_pip_secondary" {
+  allocation_method   = "Static"
+  location            = azurerm_resource_group.this.location
+  name                = "${module.naming.public_ip.name_unique}-cloud-secondary"
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = "Standard"
+  zones               = ["1", "2", "3"]
+
+  lifecycle {
+    ignore_changes = [ip_tags, tags]
+  }
+}
+
 ####################################################
 # On-prem side (Azure VNet simulating on-premises) #
 ####################################################
@@ -121,6 +135,20 @@ resource "azurerm_public_ip" "onprem_pip" {
   allocation_method   = "Static"
   location            = azurerm_resource_group.this.location
   name                = "${module.naming.public_ip.name_unique}-onprem"
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = "Standard"
+  zones               = ["1", "2", "3"]
+
+  lifecycle {
+    ignore_changes = [ip_tags, tags]
+  }
+}
+
+# Secondary public IP for the on-prem-side active-active gateway instance.
+resource "azurerm_public_ip" "onprem_pip_secondary" {
+  allocation_method   = "Static"
+  location            = azurerm_resource_group.this.location
+  name                = "${module.naming.public_ip.name_unique}-onprem-secondary"
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Standard"
   zones               = ["1", "2", "3"]
@@ -159,18 +187,25 @@ module "cloud" {
       subnet_resource_id            = azurerm_subnet.cloud_gateway_subnet.id
       public_ip_address_resource_id = azurerm_public_ip.cloud_pip.id
     }
+    secondary = {
+      name                          = "secondary"
+      subnet_resource_id            = azurerm_subnet.cloud_gateway_subnet.id
+      public_ip_address_resource_id = azurerm_public_ip.cloud_pip_secondary.id
+    }
   }
   location            = azurerm_resource_group.this.location
   name                = "${module.naming.virtual_network_gateway.name_unique}-cloud"
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "VpnGw1AZ"
-  active_active       = false
   bgp_settings = {
     asn         = local.cloud_asn
     peer_weight = 0
     peering_addresses = {
       primary = {
         ip_configuration_name = "primary"
+      }
+      secondary = {
+        ip_configuration_name = "secondary"
       }
     }
   }
@@ -216,6 +251,11 @@ module "onprem" {
       subnet_resource_id            = azurerm_subnet.onprem_gateway_subnet.id
       public_ip_address_resource_id = azurerm_public_ip.onprem_pip.id
     }
+    secondary = {
+      name                          = "secondary"
+      subnet_resource_id            = azurerm_subnet.onprem_gateway_subnet.id
+      public_ip_address_resource_id = azurerm_public_ip.onprem_pip_secondary.id
+    }
   }
   location            = azurerm_resource_group.this.location
   name                = "${module.naming.virtual_network_gateway.name_unique}-onprem"
@@ -227,6 +267,9 @@ module "onprem" {
     peering_addresses = {
       primary = {
         ip_configuration_name = "primary"
+      }
+      secondary = {
+        ip_configuration_name = "secondary"
       }
     }
   }
@@ -279,7 +322,9 @@ The following requirements are needed by this module:
 The following resources are used by this module:
 
 - [azurerm_public_ip.cloud_pip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
+- [azurerm_public_ip.cloud_pip_secondary](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_public_ip.onprem_pip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
+- [azurerm_public_ip.onprem_pip_secondary](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_subnet.cloud_gateway_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
 - [azurerm_subnet.onprem_gateway_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
