@@ -20,7 +20,7 @@ output "name" {
 
 output "nat_rules" {
   description = "Map of NAT rule resource IDs created via `var.nat_rules`, keyed by the same map key."
-  value       = module.nat_rules.resource_ids
+  value       = module.nat_rules.resource_id
 }
 
 output "resource" {

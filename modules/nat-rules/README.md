@@ -78,7 +78,7 @@ The following outputs are exported:
 
 Description: Map of created NAT rules keyed by the input map key.
 
-### <a name="output_resource_ids"></a> [resource\_ids](#output\_resource\_ids)
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Map of created NAT rule resource IDs keyed by the input map key.
 

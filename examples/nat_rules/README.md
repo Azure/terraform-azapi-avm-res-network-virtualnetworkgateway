@@ -24,10 +24,6 @@ terraform {
   required_version = "~> 1.9"
 
   required_providers {
-    azapi = {
-      source  = "Azure/azapi"
-      version = "~> 2.9"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
@@ -47,7 +43,7 @@ data "azurerm_client_config" "current" {}
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.1"
+  version = "~> 0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -57,7 +53,7 @@ resource "random_integer" "region_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "~> 0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -89,18 +85,14 @@ locals {
   # to the root module and used to construct predictable NAT rule resource
   # IDs that the IPsec connections (declared in the same module call) refer
   # back to via `ingress_nat_rule_resource_ids` / `egress_nat_rule_resource_ids`.
-  cloud_gateway_name        = "${module.naming.virtual_network_gateway.name_unique}-cloud"
-  cloud_ingress_nat_rule_id = "${local.gateway_id_prefix}/${local.cloud_gateway_name}/natRules/ingress-workload"
+  cloud_gateway_name = "${module.naming.virtual_network_gateway.name_unique}-cloud"
   # Internal (real) workload subnets - small non-overlapping slices of the
   # otherwise identical /16.
-  cloud_workload_cidr        = "10.10.1.0/24"
-  gateway_id_prefix          = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.this.name}/providers/Microsoft.Network/virtualNetworkGateways"
-  onprem_egress_nat_rule_id  = "${local.gateway_id_prefix}/${local.onprem_gateway_name}/natRules/egress-workload"
-  onprem_external_cidr       = "10.200.2.0/24"
-  onprem_gateway_name        = "${module.naming.virtual_network_gateway.name_unique}-onprem"
-  onprem_ingress_nat_rule_id = "${local.gateway_id_prefix}/${local.onprem_gateway_name}/natRules/ingress-workload"
-  onprem_workload_cidr       = "10.11.0.0/24"
-  overlapping_address_space  = "10.10.0.0/16"
+  cloud_workload_cidr       = "10.10.1.0/24"
+  gateway_id_prefix         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.this.name}/providers/Microsoft.Network/virtualNetworkGateways"
+  onprem_gateway_name       = "${module.naming.virtual_network_gateway.name_unique}-onprem"
+  onprem_workload_cidr      = "10.11.0.0/24"
+  overlapping_address_space = "10.10.0.0/16"
 }
 
 # --- Cloud-side VNet ---------------------------------------------------------
@@ -286,8 +278,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.9)
-
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
@@ -346,7 +336,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: ~> 0.4.3
 
 ### <a name="module_onprem"></a> [onprem](#module\_onprem)
 
@@ -358,7 +348,7 @@ Version:
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: ~> 0.1
+Version: ~> 0.12.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

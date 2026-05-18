@@ -30,10 +30,6 @@ terraform {
   required_version = "~> 1.9"
 
   required_providers {
-    azapi = {
-      source  = "Azure/azapi"
-      version = "~> 2.9"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
@@ -60,7 +56,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.1"
+  version = "~> 0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -70,7 +66,7 @@ resource "random_integer" "region_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "~> 0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -131,7 +127,7 @@ resource "azurerm_express_route_port" "this" {
 # using the AVM ExpressRoute circuit resource module.
 module "expressroute_circuit" {
   source  = "Azure/avm-res-network-expressroutecircuit/azurerm"
-  version = "~> 0.1"
+  version = "~> 0.3.3"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.express_route_circuit.name_unique
@@ -197,8 +193,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.9)
-
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
@@ -245,19 +239,19 @@ The following Modules are called:
 
 Source: Azure/avm-res-network-expressroutecircuit/azurerm
 
-Version: ~> 0.1
+Version: ~> 0.3.3
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: ~> 0.4.3
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: ~> 0.1
+Version: ~> 0.12.0
 
 ### <a name="module_test"></a> [test](#module\_test)
 

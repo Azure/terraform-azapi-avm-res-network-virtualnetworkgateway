@@ -286,6 +286,10 @@ Description: The full AzAPI resource object for the local network gateway.
 
 Description: The resource ID of the local network gateway.
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource ID of the IPsec connection.
+
 ## Modules
 
 No modules.

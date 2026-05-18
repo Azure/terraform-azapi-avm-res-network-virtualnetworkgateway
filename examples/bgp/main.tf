@@ -2,10 +2,6 @@ terraform {
   required_version = "~> 1.9"
 
   required_providers {
-    azapi = {
-      source  = "Azure/azapi"
-      version = "~> 2.9"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
@@ -23,7 +19,7 @@ provider "azurerm" {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.1"
+  version = "~> 0.12.0"
 }
 
 resource "random_integer" "region_index" {
@@ -33,7 +29,7 @@ resource "random_integer" "region_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "~> 0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
