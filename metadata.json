@@ -6,5 +6,8 @@
   "owners": [
     "adammontlake"
   ],
-  "telemetryIdPrefix": "46d3xtrf.res.1fa9c7b"
+  "telemetryIdPrefix": "46d3xtrf.res.1fa9c7b",
+  "alternativeNames": [
+    "VNET GW"
+  ]
 }
