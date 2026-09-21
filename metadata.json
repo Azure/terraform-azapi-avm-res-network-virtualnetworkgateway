@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
-  "moduleDisplayName": "AVM Module for Virtual Network Gateway",
-  "moduleDescription": "Intended AVM Terraform resource module for Microsoft.Network/virtualNetworkGateways.",
+  "moduleDisplayName": "Virtual Network Gateway",
+  "moduleDescription": "AVM Terraform resource module for Virtual Network Gateway.",
   "canonicalType": "Microsoft.Network/virtualNetworkGateways",
   "owners": [
     "adammontlake"
